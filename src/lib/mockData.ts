@@ -1,55 +1,79 @@
 /**
- * Przykładowe (mock) dane do prezentacji interfejsu
- * bez konieczności posiadania uruchomionego Tauri.
+ * Sample (mock) data for UI presentation
+ * without needing a running Tauri instance.
  */
-import type { BazaDanych } from "./types.js";
-import { noweKategorie } from "./kategorie.js";
+import type { Database } from "./types.js";
+import { createDefaultCategories } from "./categories.js";
 
-function kategorieMockowe() {
-  const kat = noweKategorie();
-  // Wypełnij kilka wskaźników przykładowymi statusami
-  kat[0].wskazniki[0].status = "opanowane";
-  kat[0].wskazniki[1].status = "opanowane";
-  kat[0].wskazniki[2].status = "wspomagane";
-  kat[0].wskazniki[3].status = "opanowane";
+function buildMockCategories() {
+  const cats = createDefaultCategories();
 
-  kat[1].wskazniki[0].status = "wspomagane";
-  kat[1].wskazniki[1].status = "wymaga pomocy";
-  kat[1].wskazniki[2].status = "wspomagane";
-  kat[1].wskazniki[3].status = "wspomagane";
+  // PHYSICAL
+  cats[0].indicators[0].skillLevel = "MASTERED";
+  cats[0].indicators[0].notes = "Dziecko wykazuje wysoką sprawność ruchową, swobodnie biega, skacze i rzuca.";
+  cats[0].indicators[1].skillLevel = "MASTERED";
+  cats[0].indicators[1].notes = "Dziecko wykazuje wysoką sprawność manualną, prawidłowo chwyta narzędzie pisarskie i precyzyjnie posługuje się nożyczkami.";
+  cats[0].indicators[2].skillLevel = "SUPPORTED";
+  cats[0].indicators[2].notes = "Dziecko radzi sobie z podstawową samoobsługą, jednak sporadycznie potrzebuje pomocy lub przypomnienia od dorosłego.";
+  cats[0].indicators[3].skillLevel = "MASTERED";
+  cats[0].indicators[3].notes = "Dziecko wykazuje dobrą koordynację wzrokowo-ruchową – z łatwością łączy patrzenie z precyzyjnym ruchem.";
 
-  kat[2].wskazniki[0].status = "opanowane";
-  kat[2].wskazniki[1].status = "opanowane";
-  kat[2].wskazniki[2].status = "opanowane";
-  kat[2].wskazniki[3].status = "wspomagane";
+  // EMOTIONAL
+  cats[1].indicators[0].skillLevel = "SUPPORTED";
+  cats[1].indicators[0].notes = "Dziecko z pomocą nauczyciela potrafi nazwać podstawowe emocje, jednak wymaga wsparcia w ich rozumieniu.";
+  cats[1].indicators[1].skillLevel = "NEEDS_HELP";
+  cats[1].indicators[1].notes = "Dziecko ma trudności z kontrolowaniem emocji – jego reakcje bywają gwałtowne lub nieadekwatne do sytuacji.";
+  cats[1].indicators[2].skillLevel = "SUPPORTED";
+  cats[1].indicators[2].notes = "Dziecko przeważnie radzi sobie z trudnościami, jednak wymaga dodatkowej motywacji w sytuacjach niepowodzenia.";
+  cats[1].indicators[3].skillLevel = "SUPPORTED";
+  cats[1].indicators[3].notes = "Dziecko najczęściej wyraża potrzeby i uczucia w sposób akceptowany, choć wymaga przypomnienia zasad.";
 
-  kat[3].wskazniki[0].status = "opanowane";
-  kat[3].wskazniki[1].status = "opanowane";
-  kat[3].wskazniki[2].status = "wspomagane";
-  kat[3].wskazniki[3].status = "wymaga pomocy";
-  kat[3].wskazniki[4].status = "wspomagane";
-  kat[3].wskazniki[5].status = "opanowane";
-  return kat;
+  // SOCIAL
+  cats[2].indicators[0].skillLevel = "MASTERED";
+  cats[2].indicators[0].notes = "Dziecko przestrzega reguł i zasad grupy, rozumie ich sens i stosuje je samodzielnie.";
+  cats[2].indicators[1].skillLevel = "MASTERED";
+  cats[2].indicators[1].notes = "Dziecko chętnie i sprawnie współpracuje z rówieśnikami podczas zabaw i zajęć grupowych.";
+  cats[2].indicators[2].skillLevel = "MASTERED";
+  cats[2].indicators[2].notes = "Dziecko komunikuje się z dorosłymi w sposób właściwy – zwraca się o pomoc, reaguje na polecenia.";
+  cats[2].indicators[3].skillLevel = "SUPPORTED";
+  cats[2].indicators[3].notes = "Dziecko podejmuje powierzone zadania, lecz wymaga przypominania i motywowania do ich ukończenia.";
+
+  // COGNITIVE
+  cats[3].indicators[0].skillLevel = "MASTERED";
+  cats[3].indicators[0].notes = "Dziecko mówi wyraźnie, poprawnie wymawia głoski i dysponuje bogatym zasobem słownictwa odpowiednim do wieku.";
+  cats[3].indicators[1].skillLevel = "MASTERED";
+  cats[3].indicators[1].notes = "Dziecko poprawnie wykonuje analizę i syntezę wzrokową – sprawnie składa puzzle i odtwarza wzory graficzne.";
+  cats[3].indicators[2].skillLevel = "SUPPORTED";
+  cats[3].indicators[2].notes = "Dziecko radzi sobie z analizą słuchową przy wsparciu; wymaga ćwiczenia świadomości fonologicznej.";
+  cats[3].indicators[3].skillLevel = "NEEDS_HELP";
+  cats[3].indicators[3].notes = "Dziecko wykazuje niski poziom gotowości do czytania i pisania; wymaga intensywnego przygotowania w tym zakresie.";
+  cats[3].indicators[4].skillLevel = "SUPPORTED";
+  cats[3].indicators[4].notes = "Dziecko radzi sobie z liczeniem, choć wymaga wsparcia przy bardziej złożonych operacjach matematycznych.";
+  cats[3].indicators[5].skillLevel = "MASTERED";
+  cats[3].indicators[5].notes = "Dziecko sprawnie orientuje się w przestrzeni i czasie – zna pojęcia góra/dół, stosuje nazwy dni tygodnia.";
+
+  return cats;
 }
 
-export const mockBazaDanych: BazaDanych = {
-  wersja: 1,
-  dzieci: [
-    { id: "d1", imie: "Anna", nazwisko: "Kowalska", rokUrodzenia: 2019 },
-    { id: "d2", imie: "Piotr", nazwisko: "Nowak", rokUrodzenia: 2019 },
-    { id: "d3", imie: "Zofia", nazwisko: "Wiśniewska", rokUrodzenia: 2018 },
+export const mockDatabase: Database = {
+  version: 1,
+  children: [
+    { id: "c1", firstName: "Anna", lastName: "Kowalska", birthYear: 2019 },
+    { id: "c2", firstName: "Piotr", lastName: "Nowak", birthYear: 2019 },
+    { id: "c3", firstName: "Zofia", lastName: "Wiśniewska", birthYear: 2018 },
   ],
-  diagnozy: [
+  diagnoses: [
     {
       id: "diag1",
-      dzieckoId: "d1",
-      dataUtworzenia: "2025-09-01T08:00:00.000Z",
-      dataModyfikacji: "2025-09-01T08:00:00.000Z",
-      rok: 2025,
-      kategorie: kategorieMockowe(),
-      potrzebyRozwojowe: "Dziecko wymaga wsparcia w obszarze emocjonalnym.",
-      predyspozycje: "Wyraźne zdolności artystyczne i plastyczne.",
-      wskazowkiDlaNauczyciela:
+      childId: "c1",
+      createdAt: "2025-09-01T08:00:00.000Z",
+      updatedAt: "2025-09-01T08:00:00.000Z",
+      year: 2025,
+      type: "INITIAL",
+      categories: buildMockCategories(),
+      developmentalNeeds: "Dziecko wymaga wsparcia w obszarze emocjonalnym.",
+      strengths: "Wyraźne zdolności artystyczne i plastyczne.",
+      teacherNotes:
         "Zalecana praca indywidualna nad radzeniem sobie z trudnymi emocjami.",
     },
   ],

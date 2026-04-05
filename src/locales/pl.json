@@ -1,0 +1,200 @@
+{
+  "app": {
+    "name": "Cenzurki",
+    "subtitle": "Diagnoza dojrzałości szkolnej",
+    "version": "wersja 0.1.0"
+  },
+  "nav": {
+    "children": "Lista dzieci",
+    "newDiagnosis": "Nowa diagnoza"
+  },
+  "children": {
+    "title": "Lista dzieci",
+    "countSingular": "1 dziecko w bazie",
+    "countPlural": "{count} dzieci w bazie",
+    "addChild": "+ Dodaj dziecko",
+    "addFirst": "Dodaj pierwsze dziecko",
+    "empty": {
+      "title": "Brak dzieci",
+      "desc": "Dodaj pierwsze dziecko, aby rozpocząć diagnozę."
+    },
+    "born": "ur.",
+    "age": "lat",
+    "diagnosis": "Diagnoza",
+    "noDiagnosis": "Brak diagnozy",
+    "newDiagnosis": "Nowa diagnoza",
+    "loading": "Wczytywanie danych…"
+  },
+  "addChildForm": {
+    "title": "Dodaj dziecko",
+    "firstName": "Imię",
+    "firstNamePlaceholder": "np. Anna",
+    "lastName": "Nazwisko",
+    "lastNamePlaceholder": "np. Kowalska",
+    "birthYear": "Rok urodzenia",
+    "cancel": "Anuluj",
+    "add": "Dodaj",
+    "error": {
+      "nameRequired": "Imię i nazwisko są wymagane.",
+      "invalidYear": "Podaj prawidłowy rok urodzenia."
+    }
+  },
+  "diagnosis": {
+    "newTitle": "Nowa diagnoza",
+    "newSubtitle": "Uzupełnij wszystkie obszary rozwoju MEN",
+    "editTitle": "Diagnoza",
+    "schoolYear": "Rok szkolny",
+    "lastModified": "Ostatnia modyfikacja",
+    "backToList": "← Powrót",
+    "notFound": "Nie znaleziono diagnozy.",
+    "backToListFull": "← Wróć do listy",
+    "child": "Dziecko",
+    "selectChild": "Wybierz dziecko",
+    "selectChildPlaceholder": "— wybierz —",
+    "noChildren": "Brak dzieci w bazie.",
+    "addChildFirst": "Dodaj najpierw dziecko.",
+    "type": "Typ diagnozy",
+    "types": {
+      "INITIAL": "Diagnoza wstępna",
+      "FINAL": "Informacja o gotowości szkolnej",
+      "SHORT": "Obserwacja bieżąca"
+    },
+    "additionalInfo": "Informacje dodatkowe",
+    "developmentalNeeds": "Potrzeby rozwojowe i edukacyjne (zauważone trudności)",
+    "developmentalNeedsPlaceholder": "Opisz potrzeby wsparcia dziecka…",
+    "strengths": "Predyspozycje i uzdolnienia (mocne strony)",
+    "strengthsPlaceholder": "Opisz mocne strony dziecka…",
+    "teacherNotes": "Wskazówki dla nauczyciela klasy I",
+    "teacherNotesPlaceholder": "Wskazówki i zalecenia…",
+    "save": "💾 Zapisz diagnozę",
+    "saveChanges": "💾 Zapisz zmiany",
+    "saving": "Zapisywanie…",
+    "saved": "✅ Diagnoza została zapisana! Przekierowuję do listy dzieci…",
+    "changesSaved": "✅ Zmiany zostały zapisane.",
+    "selectChildError": "Wybierz dziecko.",
+    "notesPlaceholder": "Własne uwagi nauczyciela…"
+  },
+  "skillLevels": {
+    "MASTERED": "Opanowane",
+    "SUPPORTED": "Wspomagane",
+    "NEEDS_HELP": "Wymaga pomocy"
+  },
+  "areas": {
+    "PHYSICAL": "Rozwój fizyczny",
+    "EMOTIONAL": "Rozwój emocjonalny",
+    "SOCIAL": "Rozwój społeczny",
+    "COGNITIVE": "Rozwój poznawczy"
+  },
+  "indicators": {
+    "physical_1": "Sprawność ruchowa – motoryka duża (bieganie, skakanie, rzucanie)",
+    "physical_2": "Sprawność rąk – motoryka mała (chwyt pisarski, cięcie nożyczkami)",
+    "physical_3": "Samoobsługa (ubieranie się, higiena, spożywanie posiłków)",
+    "physical_4": "Koordynacja wzrokowo-ruchowa",
+    "emotional_1": "Rozpoznawanie i nazywanie własnych emocji",
+    "emotional_2": "Kontrolowanie emocji w sytuacjach trudnych",
+    "emotional_3": "Odporność na stres i niepowodzenia (sytuacje zadaniowe)",
+    "emotional_4": "Wyrażanie potrzeb i uczuć w sposób społecznie akceptowany",
+    "social_1": "Przestrzeganie reguł i zasad obowiązujących w grupie",
+    "social_2": "Współpraca i zabawa z rówieśnikami",
+    "social_3": "Komunikacja z dorosłymi (zwracanie się o pomoc, reagowanie na polecenia)",
+    "social_4": "Samodzielność i odpowiedzialność za powierzone zadania",
+    "cognitive_1": "Mowa – wymowa i zasób słownictwa odpowiedni do wieku",
+    "cognitive_2": "Analiza i synteza wzrokowa (układanki, puzzle, rysowanie)",
+    "cognitive_3": "Analiza i synteza słuchowa (rymy, sylaby, głoski)",
+    "cognitive_4": "Gotowość do czytania i pisania (znajomość liter, orientacja na kartce)",
+    "cognitive_5": "Umiejętności matematyczne (liczenie do 10, porównywanie, klasyfikowanie)",
+    "cognitive_6": "Orientacja w przestrzeni i czasie (góra/dół, rano/wieczór, dni tygodnia)"
+  },
+  "templates": {
+    "physical_1": {
+      "MASTERED": "Dziecko wykazuje wysoką sprawność ruchową, swobodnie biega, skacze i rzuca.",
+      "SUPPORTED": "Dziecko z pomocą lub po zachęcie podejmuje aktywność ruchową – biega i skacze, choć potrzebuje wsparcia w precyzji ruchów.",
+      "NEEDS_HELP": "Dziecko wymaga systematycznych ćwiczeń motoryki dużej – ma trudności z bieganiem, skakaniem lub rzucaniem."
+    },
+    "physical_2": {
+      "MASTERED": "Dziecko wykazuje wysoką sprawność manualną, prawidłowo chwyta narzędzie pisarskie i precyzyjnie posługuje się nożyczkami.",
+      "SUPPORTED": "Dziecko pracuje nad chwytem pisarskim i obsługą nożyczek – wymaga korygowania i zachęty ze strony nauczyciela.",
+      "NEEDS_HELP": "Dziecko wymaga intensywnych ćwiczeń grafomotorycznych; ma wyraźne trudności z prawidłowym chwytem narzędzia pisarskiego."
+    },
+    "physical_3": {
+      "MASTERED": "Dziecko jest w pełni samodzielne w zakresie samoobsługi – sprawnie się ubiera, dba o higienę i spożywa posiłki bez pomocy.",
+      "SUPPORTED": "Dziecko radzi sobie z podstawową samoobsługą, jednak sporadycznie potrzebuje pomocy lub przypomnienia od dorosłego.",
+      "NEEDS_HELP": "Dziecko wymaga stałej pomocy dorosłego w zakresie samoobsługi (ubieranie, higiena, spożywanie posiłków)."
+    },
+    "physical_4": {
+      "MASTERED": "Dziecko wykazuje dobrą koordynację wzrokowo-ruchową – z łatwością łączy patrzenie z precyzyjnym ruchem.",
+      "SUPPORTED": "Koordynacja wzrokowo-ruchowa dziecka jest w trakcie doskonalenia; wymaga ćwiczeń wspierających.",
+      "NEEDS_HELP": "Dziecko ma trudności z koordynacją wzrokowo-ruchową i wymaga dodatkowych ćwiczeń usprawniających."
+    },
+    "emotional_1": {
+      "MASTERED": "Dziecko poprawnie rozpoznaje i nazywa swoje emocje, rozumie ich przyczyny.",
+      "SUPPORTED": "Dziecko z pomocą nauczyciela potrafi nazwać podstawowe emocje, jednak wymaga wsparcia w ich rozumieniu.",
+      "NEEDS_HELP": "Dziecko ma trudności z rozpoznawaniem i nazywaniem emocji; wymaga ukierunkowanej pomocy."
+    },
+    "emotional_2": {
+      "MASTERED": "Dziecko skutecznie kontroluje swoje emocje nawet w sytuacjach trudnych i konfliktowych.",
+      "SUPPORTED": "Dziecko stara się kontrolować emocje, lecz w sytuacjach stresowych wymaga wsparcia i wyciszenia przez dorosłego.",
+      "NEEDS_HELP": "Dziecko ma trudności z kontrolowaniem emocji – jego reakcje bywają gwałtowne lub nieadekwatne do sytuacji."
+    },
+    "emotional_3": {
+      "MASTERED": "Dziecko jest odporne na stres i niepowodzenia – potrafi wytrwać w zadaniu i dążyć do jego ukończenia.",
+      "SUPPORTED": "Dziecko przeważnie radzi sobie z trudnościami, jednak wymaga dodatkowej motywacji w sytuacjach niepowodzenia.",
+      "NEEDS_HELP": "Dziecko łatwo się zniechęca i wymaga stałego wsparcia oraz motywowania do wytrwania w zadaniu."
+    },
+    "emotional_4": {
+      "MASTERED": "Dziecko wyraża swoje potrzeby i uczucia w sposób społecznie akceptowany, bez agresji.",
+      "SUPPORTED": "Dziecko najczęściej wyraża potrzeby i uczucia w sposób akceptowany, choć wymaga przypomnienia zasad.",
+      "NEEDS_HELP": "Dziecko ma trudności z wyrażaniem potrzeb i uczuć w sposób społecznie akceptowany; wymaga pracy nad umiejętnościami komunikacyjnymi."
+    },
+    "social_1": {
+      "MASTERED": "Dziecko przestrzega reguł i zasad grupy, rozumie ich sens i stosuje je samodzielnie.",
+      "SUPPORTED": "Dziecko stara się przestrzegać zasad grupy, lecz wymaga przypominania i zachęty ze strony nauczyciela.",
+      "NEEDS_HELP": "Dziecko ma trudności z przestrzeganiem reguł grupowych i wymaga konsekwentnego wsparcia w tym obszarze."
+    },
+    "social_2": {
+      "MASTERED": "Dziecko chętnie i sprawnie współpracuje z rówieśnikami podczas zabaw i zajęć grupowych.",
+      "SUPPORTED": "Dziecko podejmuje współpracę z rówieśnikami, choć wymaga zachęty i pomocy w rozwiązywaniu konfliktów.",
+      "NEEDS_HELP": "Dziecko ma trudności z nawiązywaniem kontaktów i współpracą z rówieśnikami; wymaga wsparcia w rozwijaniu umiejętności społecznych."
+    },
+    "social_3": {
+      "MASTERED": "Dziecko komunikuje się z dorosłymi w sposób właściwy – zwraca się o pomoc, reaguje na polecenia.",
+      "SUPPORTED": "Dziecko komunikuje się z dorosłymi, choć wymaga zachęty do zwracania się o pomoc lub do reagowania na polecenia.",
+      "NEEDS_HELP": "Dziecko ma trudności z komunikacją z dorosłymi; wymaga ćwiczenia umiejętności wyrażania próśb i reagowania na instrukcje."
+    },
+    "social_4": {
+      "MASTERED": "Dziecko jest samodzielne i odpowiedzialne – doprowadza powierzone zadania do końca bez pomocy.",
+      "SUPPORTED": "Dziecko podejmuje powierzone zadania, lecz wymaga przypominania i motywowania do ich ukończenia.",
+      "NEEDS_HELP": "Dziecko ma trudności z samodzielnością i odpowiedzialnością za zadania; wymaga stałego nadzoru i wsparcia."
+    },
+    "cognitive_1": {
+      "MASTERED": "Dziecko mówi wyraźnie, poprawnie wymawia głoski i dysponuje bogatym zasobem słownictwa odpowiednim do wieku.",
+      "SUPPORTED": "Mowa dziecka jest zrozumiała, choć pojawiają się pewne błędy artykulacyjne wymagające pracy logopedycznej.",
+      "NEEDS_HELP": "Dziecko ma istotne trudności z wymową i/lub zasobem słownictwa; zalecana konsultacja logopedyczna."
+    },
+    "cognitive_2": {
+      "MASTERED": "Dziecko poprawnie wykonuje analizę i syntezę wzrokową – sprawnie składa puzzle i odtwarza wzory graficzne.",
+      "SUPPORTED": "Dziecko radzi sobie z analizą wzrokową przy wsparciu nauczyciela; wymaga ćwiczenia spostrzegawczości.",
+      "NEEDS_HELP": "Dziecko ma trudności z analizą i syntezą wzrokową; wymaga systematycznych ćwiczeń percepcji wzrokowej."
+    },
+    "cognitive_3": {
+      "MASTERED": "Dziecko sprawnie dokonuje analizy i syntezy słuchowej – wyodrębnia rymy, sylaby i głoski.",
+      "SUPPORTED": "Dziecko radzi sobie z analizą słuchową przy wsparciu; wymaga ćwiczenia świadomości fonologicznej.",
+      "NEEDS_HELP": "Dziecko ma trudności z analizą i syntezą słuchową; wskazane są intensywne ćwiczenia fonologiczne."
+    },
+    "cognitive_4": {
+      "MASTERED": "Dziecko wykazuje gotowość do czytania i pisania – zna litery, prawidłowo orientuje się na kartce.",
+      "SUPPORTED": "Dziecko zna część liter i orientuje się na kartce, lecz wymaga dalszego utrwalania tej gotowości.",
+      "NEEDS_HELP": "Dziecko wykazuje niski poziom gotowości do czytania i pisania; wymaga intensywnego przygotowania w tym zakresie."
+    },
+    "cognitive_5": {
+      "MASTERED": "Dziecko sprawnie liczy do 10, porównuje liczności i klasyfikuje przedmioty według cech.",
+      "SUPPORTED": "Dziecko radzi sobie z liczeniem, choć wymaga wsparcia przy bardziej złożonych operacjach matematycznych.",
+      "NEEDS_HELP": "Dziecko ma trudności z podstawowymi umiejętnościami matematycznymi; wymaga systematycznych ćwiczeń."
+    },
+    "cognitive_6": {
+      "MASTERED": "Dziecko sprawnie orientuje się w przestrzeni i czasie – zna pojęcia góra/dół, stosuje nazwy dni tygodnia.",
+      "SUPPORTED": "Dziecko zna podstawowe pojęcia przestrzenne i czasowe, lecz wymaga utrwalania i ćwiczenia.",
+      "NEEDS_HELP": "Dziecko ma trudności z orientacją w przestrzeni i czasie; potrzebuje systematycznych ćwiczeń w tym obszarze."
+    }
+  }
+}

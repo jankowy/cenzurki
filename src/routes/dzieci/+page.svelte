@@ -1,109 +1,109 @@
 <script lang="ts">
-  import { baza, ladowanie } from "$lib/store.js";
-  import type { Dziecko, Diagnoza } from "$lib/types.js";
-  import { goto } from "$app/navigation";
-  import { dodajDziecko, generujId } from "$lib/dataService.js";
+  import { database, isLoading } from "$lib/store.js";
+  import type { Child, Diagnosis } from "$lib/types.js";
+  import { addChild } from "$lib/dataService.js";
+  import { t } from "svelte-i18n";
 
-  let pokazFormularz = $state(false);
-  let noweImie = $state("");
-  let noweNazwisko = $state("");
-  let nowyRok = $state(new Date().getFullYear() - 6);
-  let bladFormularza = $state("");
+  let showForm = $state(false);
+  let newFirstName = $state("");
+  let newLastName = $state("");
+  let newBirthYear = $state(new Date().getFullYear() - 6);
+  let formError = $state("");
 
-  function ostatniaDiagnoza(dzieckoId: string): Diagnoza | undefined {
-    return $baza.diagnozy
-      .filter((d) => d.dzieckoId === dzieckoId)
+  function latestDiagnosis(childId: string): Diagnosis | undefined {
+    return $database.diagnoses
+      .filter((d) => d.childId === childId)
       .sort(
         (a, b) =>
-          new Date(b.dataModyfikacji).getTime() -
-          new Date(a.dataModyfikacji).getTime()
+          new Date(b.updatedAt).getTime() -
+          new Date(a.updatedAt).getTime()
       )[0];
   }
 
-  function wiek(rokUrodzenia: number): number {
-    return new Date().getFullYear() - rokUrodzenia;
+  function age(birthYear: number): number {
+    return new Date().getFullYear() - birthYear;
   }
 
-  async function dodaj() {
-    bladFormularza = "";
-    if (!noweImie.trim() || !noweNazwisko.trim()) {
-      bladFormularza = "Imię i nazwisko są wymagane.";
+  function childCount(n: number): string {
+    if (n === 1) return $t("children.countSingular");
+    return $t("children.countPlural", { values: { count: n } });
+  }
+
+  async function addChildHandler() {
+    formError = "";
+    if (!newFirstName.trim() || !newLastName.trim()) {
+      formError = $t("addChildForm.error.nameRequired");
       return;
     }
-    if (nowyRok < 2000 || nowyRok > new Date().getFullYear()) {
-      bladFormularza = "Podaj prawidłowy rok urodzenia.";
+    if (newBirthYear < 2000 || newBirthYear > new Date().getFullYear()) {
+      formError = $t("addChildForm.error.invalidYear");
       return;
     }
-    const zaktualizowana = await dodajDziecko($baza, {
-      imie: noweImie.trim(),
-      nazwisko: noweNazwisko.trim(),
-      rokUrodzenia: nowyRok,
+    const updated = await addChild($database, {
+      firstName: newFirstName.trim(),
+      lastName: newLastName.trim(),
+      birthYear: newBirthYear,
     });
-    baza.set(zaktualizowana);
-    noweImie = "";
-    noweNazwisko = "";
-    nowyRok = new Date().getFullYear() - 6;
-    pokazFormularz = false;
+    database.set(updated);
+    newFirstName = "";
+    newLastName = "";
+    newBirthYear = new Date().getFullYear() - 6;
+    showForm = false;
   }
 
-  function diagnozaUrl(d: Dziecko) {
-    const diag = ostatniaDiagnoza(d.id);
-    return diag ? `/diagnoza/${diag.id}` : `/diagnoza/nowa?dzieckoId=${d.id}`;
+  function diagnosisUrl(child: Child) {
+    const diag = latestDiagnosis(child.id);
+    return diag ? `/diagnoza/${diag.id}` : `/diagnoza/nowa?dzieckoId=${child.id}`;
   }
 </script>
 
 <div class="page">
   <header class="page-header">
     <div>
-      <h1>Lista dzieci</h1>
-      <p class="subtitle">
-        {$baza.dzieci.length} {$baza.dzieci.length === 1 ? "dziecko" : "dzieci"}
-        w bazie
-      </p>
+      <h1>{$t("children.title")}</h1>
+      <p class="subtitle">{childCount($database.children.length)}</p>
     </div>
-    <button class="btn btn-primary" onclick={() => (pokazFormularz = true)}>
-      + Dodaj dziecko
+    <button class="btn btn-primary" onclick={() => (showForm = true)}>
+      {$t("children.addChild")}
     </button>
   </header>
 
-  {#if $ladowanie}
+  {#if $isLoading}
     <div class="spinner-container">
       <div class="spinner"></div>
-      <p>Wczytywanie danych…</p>
+      <p>{$t("children.loading")}</p>
     </div>
-  {:else if $baza.dzieci.length === 0}
+  {:else if $database.children.length === 0}
     <div class="empty-state">
       <span class="empty-icon">👶</span>
-      <h2>Brak dzieci</h2>
-      <p>Dodaj pierwsze dziecko, aby rozpocząć diagnozę.</p>
-      <button class="btn btn-primary" onclick={() => (pokazFormularz = true)}>
-        Dodaj pierwsze dziecko
+      <h2>{$t("children.empty.title")}</h2>
+      <p>{$t("children.empty.desc")}</p>
+      <button class="btn btn-primary" onclick={() => (showForm = true)}>
+        {$t("children.addFirst")}
       </button>
     </div>
   {:else}
     <div class="children-grid">
-      {#each $baza.dzieci as dziecko (dziecko.id)}
-        {@const diag = ostatniaDiagnoza(dziecko.id)}
+      {#each $database.children as child (child.id)}
+        {@const diag = latestDiagnosis(child.id)}
         <div class="child-card">
-          <div class="child-avatar">{dziecko.imie[0]}{dziecko.nazwisko[0]}</div>
+          <div class="child-avatar">{child.firstName[0]}{child.lastName[0]}</div>
           <div class="child-info">
-            <h3>{dziecko.imie} {dziecko.nazwisko}</h3>
+            <h3>{child.firstName} {child.lastName}</h3>
             <p class="child-meta">
-              ur. {dziecko.rokUrodzenia} · {wiek(dziecko.rokUrodzenia)} lat
+              {$t("children.born")} {child.birthYear} · {age(child.birthYear)} {$t("children.age")}
             </p>
             {#if diag}
               <p class="child-diag">
-                Diagnoza: {new Date(diag.dataModyfikacji).toLocaleDateString(
-                  "pl-PL"
-                )}
+                {$t("children.diagnosis")}: {new Date(diag.updatedAt).toLocaleDateString("pl-PL")}
               </p>
             {:else}
-              <p class="child-diag no-diag">Brak diagnozy</p>
+              <p class="child-diag no-diag">{$t("children.noDiagnosis")}</p>
             {/if}
           </div>
           <div class="child-actions">
-            <a href={diagnozaUrl(dziecko)} class="btn btn-sm btn-outline">
-              {diag ? "Diagnoza" : "Nowa diagnoza"}
+            <a href={diagnosisUrl(child)} class="btn btn-sm btn-outline">
+              {diag ? $t("children.diagnosis") : $t("children.newDiagnosis")}
             </a>
           </div>
         </div>
@@ -112,14 +112,14 @@
   {/if}
 </div>
 
-<!-- Modal: Dodaj dziecko -->
-{#if pokazFormularz}
+<!-- Modal: Add child -->
+{#if showForm}
   <div
     class="modal-overlay"
     role="button"
     tabindex="-1"
-    onclick={() => (pokazFormularz = false)}
-    onkeydown={(e) => e.key === "Escape" && (pokazFormularz = false)}
+    onclick={() => (showForm = false)}
+    onkeydown={(e) => e.key === "Escape" && (showForm = false)}
   >
     <div
       class="modal"
@@ -130,30 +130,30 @@
       onclick={(e) => e.stopPropagation()}
       onkeydown={(e) => e.stopPropagation()}
     >
-      <h2 id="modal-title">Dodaj dziecko</h2>
+      <h2 id="modal-title">{$t("addChildForm.title")}</h2>
 
-      {#if bladFormularza}
-        <p class="form-error">{bladFormularza}</p>
+      {#if formError}
+        <p class="form-error">{formError}</p>
       {/if}
 
       <label>
-        Imię
-        <input type="text" bind:value={noweImie} placeholder="np. Anna" />
+        {$t("addChildForm.firstName")}
+        <input type="text" bind:value={newFirstName} placeholder={$t("addChildForm.firstNamePlaceholder")} />
       </label>
       <label>
-        Nazwisko
-        <input type="text" bind:value={noweNazwisko} placeholder="np. Kowalska" />
+        {$t("addChildForm.lastName")}
+        <input type="text" bind:value={newLastName} placeholder={$t("addChildForm.lastNamePlaceholder")} />
       </label>
       <label>
-        Rok urodzenia
-        <input type="number" bind:value={nowyRok} min="2000" max={new Date().getFullYear()} />
+        {$t("addChildForm.birthYear")}
+        <input type="number" bind:value={newBirthYear} min="2000" max={new Date().getFullYear()} />
       </label>
 
       <div class="modal-buttons">
-        <button class="btn btn-outline" onclick={() => (pokazFormularz = false)}>
-          Anuluj
+        <button class="btn btn-outline" onclick={() => (showForm = false)}>
+          {$t("addChildForm.cancel")}
         </button>
-        <button class="btn btn-primary" onclick={dodaj}>Dodaj</button>
+        <button class="btn btn-primary" onclick={addChildHandler}>{$t("addChildForm.add")}</button>
       </div>
     </div>
   </div>
