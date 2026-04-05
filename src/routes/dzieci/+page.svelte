@@ -39,16 +39,20 @@
       formError = $t("addChildForm.error.invalidYear");
       return;
     }
-    const updated = await addChild($database, {
-      firstName: newFirstName.trim(),
-      lastName: newLastName.trim(),
-      birthYear: newBirthYear,
-    });
-    database.set(updated);
-    newFirstName = "";
-    newLastName = "";
-    newBirthYear = new Date().getFullYear() - 6;
-    showForm = false;
+    try {
+      const updated = await addChild($database, {
+        firstName: newFirstName.trim(),
+        lastName: newLastName.trim(),
+        birthYear: newBirthYear,
+      });
+      database.set(updated);
+      newFirstName = "";
+      newLastName = "";
+      newBirthYear = new Date().getFullYear() - 6;
+      showForm = false;
+    } catch (e) {
+      formError = e instanceof Error ? e.message : $t("addChildForm.error.saveFailed");
+    }
   }
 
   function diagnosisUrl(child: Child) {
