@@ -62,6 +62,23 @@
     };
   }
 
+  function updateNotes(catIndex: number, indIndex: number, value: string) {
+    if (!draft) return;
+    draft = {
+      ...draft,
+      categories: draft.categories.map((cat, ci) =>
+        ci === catIndex
+          ? {
+              ...cat,
+              indicators: cat.indicators.map((ind, ii) =>
+                ii === indIndex ? { ...ind, notes: value } : ind
+              ),
+            }
+          : cat
+      ),
+    };
+  }
+
   async function save() {
     if (!draft) return;
     errorMessage = "";
@@ -133,7 +150,8 @@
                   class="notes-field"
                   rows="2"
                   placeholder={$t("diagnosis.notesPlaceholder")}
-                  bind:value={draft.categories[catIndex].indicators[indIndex].notes}
+                  value={ind.notes ?? ""}
+                  oninput={(e) => updateNotes(catIndex, indIndex, (e.currentTarget as HTMLTextAreaElement).value)}
                 ></textarea>
               {/if}
             </div>

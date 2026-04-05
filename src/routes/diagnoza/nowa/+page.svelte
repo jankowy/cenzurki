@@ -52,6 +52,13 @@
     };
   }
 
+  function updateNotes(catIndex: number, indIndex: number, value: string) {
+    categories[catIndex].indicators[indIndex] = {
+      ...categories[catIndex].indicators[indIndex],
+      notes: value,
+    };
+  }
+
   async function saveDiagnosis() {
     errorMessage = "";
     if (!selectedChildId) {
@@ -156,7 +163,8 @@
                   class="notes-field"
                   rows="2"
                   placeholder={$t("diagnosis.notesPlaceholder")}
-                  bind:value={categories[catIndex].indicators[indIndex].notes}
+                  value={ind.notes ?? ""}
+                  oninput={(e) => updateNotes(catIndex, indIndex, (e.currentTarget as HTMLTextAreaElement).value)}
                 ></textarea>
               {/if}
             </div>
