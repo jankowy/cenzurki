@@ -3,6 +3,7 @@
   import { database } from "$lib/store.js";
   import type { Diagnosis, SkillLevel } from "$lib/types.js";
   import { updateDiagnosis } from "$lib/dataService.js";
+  import { generateDiagnosisPdf } from "$lib/pdfGenerator.js";
   import { goto } from "$app/navigation";
   import { t } from "svelte-i18n";
 
@@ -28,6 +29,7 @@
   let isSaving = $state(false);
   let isSuccess = $state(false);
   let errorMessage = $state("");
+  let isGeneratingPdf = $state(false);
 
   const SKILL_LEVELS: { value: SkillLevel; color: string }[] = [
     { value: "MASTERED", color: "#16a34a" },
@@ -96,6 +98,27 @@
       errorMessage = String(e);
     } finally {
       isSaving = false;
+    }
+  }
+
+  async function generatePdf() {
+    if (!draft || !child) return;
+    isGeneratingPdf = true;
+    try {
+      // Build indicator label map from i18n store
+      const indicatorKeys = [
+        "physical_1", "physical_2", "physical_3", "physical_4",
+        "emotional_1", "emotional_2", "emotional_3", "emotional_4",
+        "social_1", "social_2", "social_3", "social_4",
+        "cognitive_1", "cognitive_2", "cognitive_3", "cognitive_4", "cognitive_5", "cognitive_6",
+      ];
+      const indicatorLabels: Record<string, string> = {};
+      for (const key of indicatorKeys) {
+        indicatorLabels[key] = $t(`indicators.${key}`);
+      }
+      generateDiagnosisPdf(draft, child, indicatorLabels);
+    } finally {
+      isGeneratingPdf = false;
     }
   }
 </script>
@@ -185,6 +208,13 @@
     {/if}
 
     <div class="save-row">
+      <button
+        class="btn btn-outline btn-lg"
+        onclick={generatePdf}
+        disabled={isGeneratingPdf || !draft}
+      >
+        {isGeneratingPdf ? $t("diagnosis.generatingPdf") : $t("diagnosis.generatePdf")}
+      </button>
       <button
         class="btn btn-primary btn-lg"
         onclick={save}
@@ -362,6 +392,7 @@
   .save-row {
     display: flex;
     justify-content: flex-end;
+    gap: 0.6rem;
     margin-top: 0.5rem;
     margin-bottom: 2rem;
   }
