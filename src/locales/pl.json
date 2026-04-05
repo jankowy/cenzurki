@@ -72,7 +72,9 @@
     "saved": "✅ Diagnoza została zapisana! Przekierowuję do listy dzieci…",
     "changesSaved": "✅ Zmiany zostały zapisane.",
     "selectChildError": "Wybierz dziecko.",
-    "notesPlaceholder": "Własne uwagi nauczyciela…"
+    "notesPlaceholder": "Własne uwagi nauczyciela…",
+    "generatePdf": "🖨️ Generuj PDF (Druk MEN)",
+    "generatingPdf": "Generowanie PDF…"
   },
   "skillLevels": {
     "MASTERED": "Opanowane",
