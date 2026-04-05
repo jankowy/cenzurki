@@ -1,58 +1,63 @@
 /**
- * Typy danych dla aplikacji "Cenzurki"
- * Diagnoza dojrzałości szkolnej zgodna z wymogami MEN
+ * Data types for the "Cenzurki" application.
+ * School readiness assessment compliant with MEN requirements.
  */
 
-/** Możliwe statusy oceny dla każdej kategorii diagnozy */
-export type Status = "opanowane" | "wspomagane" | "wymaga pomocy";
+/** Possible skill assessment levels for each indicator */
+export type SkillLevel = "MASTERED" | "SUPPORTED" | "NEEDS_HELP";
 
-/** Dane osobowe dziecka */
-export interface Dziecko {
+/** Development area as defined by MEN */
+export type DevelopmentArea = "PHYSICAL" | "EMOTIONAL" | "SOCIAL" | "COGNITIVE";
+
+/** Type of diagnosis document */
+export type DiagnosisType = "INITIAL" | "FINAL" | "SHORT";
+
+/** Child's personal data */
+export interface Child {
   id: string;
-  imie: string;
-  nazwisko: string;
-  rokUrodzenia: number;
+  firstName: string;
+  lastName: string;
+  birthYear: number;
 }
 
-/** Pojedynczy wskaźnik / kryterium oceny w ramach kategorii */
-export interface Wskaznik {
+/** A single assessment indicator within a development area */
+export interface Indicator {
   id: string;
-  opis: string;
-  status: Status | null;
-  uwagi?: string;
+  skillLevel: SkillLevel | null;
+  notes?: string;
 }
 
-/** Kategoria diagnozy MEN */
-export interface KategoriaDiagnozy {
-  id: string;
-  nazwa: string;
-  wskazniki: Wskaznik[];
+/** A MEN development area with its assessment indicators */
+export interface DiagnosisCategory {
+  area: DevelopmentArea;
+  indicators: Indicator[];
 }
 
 /**
- * Pełny arkusz diagnozy dojrzałości szkolnej dla jednego dziecka.
- * Zgodny z "Informacją o gotowości dziecka do podjęcia nauki
- * w szkole podstawowej" (rozporządzenie MEN).
+ * Full school readiness assessment sheet for one child.
+ * Compliant with "Informacja o gotowości dziecka do podjęcia nauki
+ * w szkole podstawowej" (MEN regulation).
  */
-export interface Diagnoza {
+export interface Diagnosis {
   id: string;
-  dzieckoId: string;
-  dataUtworzenia: string; // ISO 8601
-  dataModyfikacji: string; // ISO 8601
-  rok: number; // rok szkolny, np. 2025
-  /** 4 główne obszary rozwoju wg MEN */
-  kategorie: KategoriaDiagnozy[];
-  /** Dodatkowe potrzeby rozwojowe / zalecenia dla rodziców */
-  potrzebyRozwojowe: string;
-  /** Mocne strony / predyspozycje */
-  predyspozycje: string;
-  /** Wskazówki dla nauczyciela klasy I */
-  wskazowkiDlaNauczyciela: string;
+  childId: string;
+  createdAt: string; // ISO 8601
+  updatedAt: string; // ISO 8601
+  year: number; // school year, e.g. 2025
+  type: DiagnosisType;
+  /** 4 main MEN development areas */
+  categories: DiagnosisCategory[];
+  /** Additional developmental needs / recommendations for parents */
+  developmentalNeeds: string;
+  /** Strengths / predispositions */
+  strengths: string;
+  /** Notes for the primary school teacher */
+  teacherNotes: string;
 }
 
-/** Struktura całej bazy danych (jeden plik JSON na dysku) */
-export interface BazaDanych {
-  wersja: number;
-  dzieci: Dziecko[];
-  diagnozy: Diagnoza[];
+/** Structure of the entire database (one JSON file on disk) */
+export interface Database {
+  version: number;
+  children: Child[];
+  diagnoses: Diagnosis[];
 }

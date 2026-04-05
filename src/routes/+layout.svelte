@@ -1,17 +1,19 @@
 <script lang="ts">
   import { onMount } from "svelte";
   import { page } from "$app/stores";
-  import { inicjalizuj } from "$lib/store.js";
+  import { t } from "svelte-i18n";
+  import "$lib/i18n.js";
+  import { initStore } from "$lib/store.js";
 
   let { children } = $props();
 
   onMount(() => {
-    inicjalizuj();
+    initStore();
   });
 
   const navItems = [
-    { href: "/dzieci", label: "Lista dzieci" },
-    { href: "/diagnoza/nowa", label: "Nowa diagnoza" },
+    { href: "/dzieci", labelKey: "nav.children" },
+    { href: "/diagnoza/nowa", labelKey: "nav.newDiagnosis" },
   ];
 </script>
 
@@ -20,8 +22,8 @@
     <div class="logo">
       <span class="logo-icon">📋</span>
       <div class="logo-text">
-        <strong>Cenzurki</strong>
-        <small>Diagnoza dojrzałości szkolnej</small>
+        <strong>{$t("app.name")}</strong>
+        <small>{$t("app.subtitle")}</small>
       </div>
     </div>
 
@@ -33,7 +35,7 @@
               href={item.href}
               class:active={$page.url.pathname.startsWith(item.href)}
             >
-              {item.label}
+              {$t(item.labelKey)}
             </a>
           </li>
         {/each}
@@ -41,7 +43,7 @@
     </nav>
 
     <footer class="sidebar-footer">
-      <small>wersja 0.1.0</small>
+      <small>{$t("app.version")}</small>
     </footer>
   </aside>
 

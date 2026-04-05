@@ -1,88 +1,88 @@
 /**
- * Serwis danych – zapis i odczyt bazy danych z lokalnego pliku JSON.
- * Używa Tauri fs API (plugin-fs) do operacji na plikach.
- * W trybie przeglądarki (dev bez Tauri) działa na danych in-memory.
+ * Data service – read and write the database from/to a local JSON file.
+ * Uses Tauri fs API (plugin-fs) for file operations.
+ * In browser mode (dev without Tauri) it operates on in-memory data.
  */
-import type { BazaDanych, Dziecko, Diagnoza } from "./types.js";
-import { mockBazaDanych } from "./mockData.js";
+import type { Database, Child, Diagnosis } from "./types.js";
+import { mockDatabase } from "./mockData.js";
 
-const PLIK_DANYCH = "dane.json";
+const DATA_FILE = "data.json";
 
-function czyTauri(): boolean {
+function isTauri(): boolean {
   return typeof window !== "undefined" && "__TAURI_INTERNALS__" in window;
 }
 
-/** Wczytuje bazę danych z pliku JSON lub zwraca mock w trybie dev */
-export async function wczytajBaze(): Promise<BazaDanych> {
-  if (!czyTauri()) {
-    return structuredClone(mockBazaDanych);
+/** Loads the database from a JSON file or returns mock data in dev mode */
+export async function loadDatabase(): Promise<Database> {
+  if (!isTauri()) {
+    return structuredClone(mockDatabase);
   }
   try {
     const { readTextFile, BaseDirectory } = await import(
       "@tauri-apps/plugin-fs"
     );
-    const tekst = await readTextFile(PLIK_DANYCH, {
+    const text = await readTextFile(DATA_FILE, {
       baseDir: BaseDirectory.AppData,
     });
-    return JSON.parse(tekst) as BazaDanych;
+    return JSON.parse(text) as Database;
   } catch {
-    // Plik nie istnieje – zwróć pustą bazę
-    return { wersja: 1, dzieci: [], diagnozy: [] };
+    // File doesn't exist yet – return an empty database
+    return { version: 1, children: [], diagnoses: [] };
   }
 }
 
-/** Zapisuje całą bazę danych do pliku JSON */
-export async function zapiszBaze(baza: BazaDanych): Promise<void> {
-  if (!czyTauri()) {
-    console.info("[dev] Zapis bazy (mock):", baza);
+/** Saves the entire database to a JSON file */
+export async function saveDatabase(db: Database): Promise<void> {
+  if (!isTauri()) {
+    console.info("[dev] Save database (mock):", db);
     return;
   }
   const { writeTextFile, BaseDirectory } = await import("@tauri-apps/plugin-fs");
-  await writeTextFile(PLIK_DANYCH, JSON.stringify(baza, null, 2), {
+  await writeTextFile(DATA_FILE, JSON.stringify(db, null, 2), {
     baseDir: BaseDirectory.AppData,
   });
 }
 
-/** Pomocnicza funkcja generująca proste unikalne ID */
-export function generujId(): string {
+/** Helper function that generates a simple unique ID */
+export function generateId(): string {
   return `${Date.now()}-${Math.random().toString(36).slice(2, 9)}`;
 }
 
-/** Dodaje nowe dziecko do bazy i zapisuje plik */
-export async function dodajDziecko(
-  baza: BazaDanych,
-  dziecko: Omit<Dziecko, "id">
-): Promise<BazaDanych> {
-  const nowaDb: BazaDanych = {
-    ...baza,
-    dzieci: [...baza.dzieci, { ...dziecko, id: generujId() }],
+/** Adds a new child to the database and saves the file */
+export async function addChild(
+  db: Database,
+  child: Omit<Child, "id">
+): Promise<Database> {
+  const updated: Database = {
+    ...db,
+    children: [...db.children, { ...child, id: generateId() }],
   };
-  await zapiszBaze(nowaDb);
-  return nowaDb;
+  await saveDatabase(updated);
+  return updated;
 }
 
-/** Dodaje nową diagnozę do bazy i zapisuje plik */
-export async function dodajDiagnozę(
-  baza: BazaDanych,
-  diagnoza: Omit<Diagnoza, "id">
-): Promise<BazaDanych> {
-  const nowaDb: BazaDanych = {
-    ...baza,
-    diagnozy: [...baza.diagnozy, { ...diagnoza, id: generujId() }],
+/** Adds a new diagnosis to the database and saves the file */
+export async function addDiagnosis(
+  db: Database,
+  diagnosis: Omit<Diagnosis, "id">
+): Promise<Database> {
+  const updated: Database = {
+    ...db,
+    diagnoses: [...db.diagnoses, { ...diagnosis, id: generateId() }],
   };
-  await zapiszBaze(nowaDb);
-  return nowaDb;
+  await saveDatabase(updated);
+  return updated;
 }
 
-/** Aktualizuje istniejącą diagnozę w bazie i zapisuje plik */
-export async function aktualizujDiagnozę(
-  baza: BazaDanych,
-  diagnoza: Diagnoza
-): Promise<BazaDanych> {
-  const nowaDb: BazaDanych = {
-    ...baza,
-    diagnozy: baza.diagnozy.map((d) => (d.id === diagnoza.id ? diagnoza : d)),
+/** Updates an existing diagnosis in the database and saves the file */
+export async function updateDiagnosis(
+  db: Database,
+  diagnosis: Diagnosis
+): Promise<Database> {
+  const updated: Database = {
+    ...db,
+    diagnoses: db.diagnoses.map((d) => (d.id === diagnosis.id ? diagnosis : d)),
   };
-  await zapiszBaze(nowaDb);
-  return nowaDb;
+  await saveDatabase(updated);
+  return updated;
 }

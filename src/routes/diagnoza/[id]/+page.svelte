@@ -1,163 +1,178 @@
 <script lang="ts">
   import { page } from "$app/stores";
-  import { baza } from "$lib/store.js";
-  import type { Diagnoza, Status } from "$lib/types.js";
-  import { aktualizujDiagnozę } from "$lib/dataService.js";
+  import { database } from "$lib/store.js";
+  import type { Diagnosis, SkillLevel } from "$lib/types.js";
+  import { updateDiagnosis } from "$lib/dataService.js";
   import { goto } from "$app/navigation";
+  import { t } from "svelte-i18n";
 
   let diagId = $derived($page.params.id);
 
-  let diagnoza = $derived<Diagnoza | undefined>(
-    $baza.diagnozy.find((d) => d.id === diagId)
+  let diagnosis = $derived<Diagnosis | undefined>(
+    $database.diagnoses.find((d) => d.id === diagId)
   );
 
-  let dziecko = $derived(
-    diagnoza ? $baza.dzieci.find((d) => d.id === diagnoza!.dzieckoId) : undefined
+  let child = $derived(
+    diagnosis ? $database.children.find((c) => c.id === diagnosis!.childId) : undefined
   );
 
-  // Lokalna kopia do edycji
-  let robocze = $state<Diagnoza | null>(null);
+  // Local working copy for editing
+  let draft = $state<Diagnosis | null>(null);
 
   $effect(() => {
-    if (diagnoza && !robocze) {
-      robocze = structuredClone(diagnoza);
+    if (diagnosis && !draft) {
+      draft = structuredClone(diagnosis);
     }
   });
 
-  let zapisywanie = $state(false);
-  let sukces = $state(false);
-  let blad = $state("");
+  let isSaving = $state(false);
+  let isSuccess = $state(false);
+  let errorMessage = $state("");
 
-  const STATUSY: { value: Status; label: string; kolor: string }[] = [
-    { value: "opanowane", label: "Opanowane", kolor: "#16a34a" },
-    { value: "wspomagane", label: "Wspomagane", kolor: "#d97706" },
-    { value: "wymaga pomocy", label: "Wymaga pomocy", kolor: "#dc2626" },
+  const SKILL_LEVELS: { value: SkillLevel; color: string }[] = [
+    { value: "MASTERED", color: "#16a34a" },
+    { value: "SUPPORTED", color: "#d97706" },
+    { value: "NEEDS_HELP", color: "#dc2626" },
   ];
 
-  function ustawStatus(katId: string, wskaznikId: string, status: Status) {
-    if (!robocze) return;
-    robocze = {
-      ...robocze,
-      kategorie: robocze.kategorie.map((k) =>
-        k.id === katId
+  function getTemplate(indicatorId: string, level: SkillLevel): string {
+    const key = `templates.${indicatorId}.${level}`;
+    const result = $t(key);
+    return result !== key ? result : "";
+  }
+
+  function setSkillLevel(catIndex: number, indIndex: number, level: SkillLevel) {
+    if (!draft) return;
+    const indicator = draft.categories[catIndex].indicators[indIndex];
+    const template = getTemplate(indicator.id, level);
+    draft = {
+      ...draft,
+      categories: draft.categories.map((cat, ci) =>
+        ci === catIndex
           ? {
-              ...k,
-              wskazniki: k.wskazniki.map((w) =>
-                w.id === wskaznikId ? { ...w, status } : w
+              ...cat,
+              indicators: cat.indicators.map((ind, ii) =>
+                ii === indIndex
+                  ? { ...ind, skillLevel: level, notes: template || ind.notes || "" }
+                  : ind
               ),
             }
-          : k
+          : cat
       ),
     };
   }
 
-  async function zapisz() {
-    if (!robocze) return;
-    blad = "";
-    zapisywanie = true;
+  async function save() {
+    if (!draft) return;
+    errorMessage = "";
+    isSaving = true;
     try {
-      const zaktualizowana = {
-        ...robocze,
-        dataModyfikacji: new Date().toISOString(),
+      const updated = {
+        ...draft,
+        updatedAt: new Date().toISOString(),
       };
-      const nowaDb = await aktualizujDiagnozę($baza, zaktualizowana);
-      baza.set(nowaDb);
-      sukces = true;
-      setTimeout(() => { sukces = false; }, 3000);
+      const updatedDb = await updateDiagnosis($database, updated);
+      database.set(updatedDb);
+      isSuccess = true;
+      setTimeout(() => { isSuccess = false; }, 3000);
     } catch (e) {
-      blad = String(e);
+      errorMessage = String(e);
     } finally {
-      zapisywanie = false;
+      isSaving = false;
     }
   }
 </script>
 
 <div class="page">
-  {#if !diagnoza || !dziecko || !robocze}
+  {#if !diagnosis || !child || !draft}
     <div class="not-found">
-      <p>Nie znaleziono diagnozy.</p>
-      <a href="/dzieci" class="btn btn-outline">← Wróć do listy</a>
+      <p>{$t("diagnosis.notFound")}</p>
+      <a href="/dzieci" class="btn btn-outline">{$t("diagnosis.backToListFull")}</a>
     </div>
   {:else}
     <header class="page-header">
       <div>
-        <h1>Diagnoza: {dziecko.imie} {dziecko.nazwisko}</h1>
+        <h1>{$t("diagnosis.editTitle")}: {child.firstName} {child.lastName}</h1>
         <p class="subtitle">
-          Rok szkolny: {diagnoza.rok} · Ostatnia modyfikacja:
-          {new Date(diagnoza.dataModyfikacji).toLocaleDateString("pl-PL")}
+          {$t("diagnosis.schoolYear")}: {diagnosis.year} ·
+          {$t("diagnosis.lastModified")}:
+          {new Date(diagnosis.updatedAt).toLocaleDateString("pl-PL")}
+          · {$t(`diagnosis.types.${diagnosis.type}`)}
         </p>
       </div>
-      <a href="/dzieci" class="btn btn-outline">← Powrót</a>
+      <a href="/dzieci" class="btn btn-outline">{$t("diagnosis.backToList")}</a>
     </header>
 
-    {#if sukces}
-      <div class="alert alert-success">✅ Zmiany zostały zapisane.</div>
+    {#if isSuccess}
+      <div class="alert alert-success">{$t("diagnosis.changesSaved")}</div>
     {/if}
 
-    <!-- 4 kategorie MEN -->
-    {#each robocze.kategorie as kat (kat.id)}
+    <!-- 4 MEN development categories -->
+    {#each draft.categories as cat, catIndex (cat.area)}
       <section class="card">
-        <h2 class="section-title kategoria-{kat.id}">{kat.nazwa}</h2>
+        <h2 class="section-title area-{cat.area.toLowerCase()}">{$t(`areas.${cat.area}`)}</h2>
 
-        <div class="wskazniki">
-          {#each kat.wskazniki as w (w.id)}
-            <div class="wskaznik">
-              <p class="wskaznik-opis">{w.opis}</p>
-              <div class="status-buttons">
-                {#each STATUSY as s}
+        <div class="indicators">
+          {#each cat.indicators as ind, indIndex (ind.id)}
+            <div class="indicator">
+              <p class="indicator-desc">{$t(`indicators.${ind.id}`)}</p>
+              <div class="skill-buttons">
+                {#each SKILL_LEVELS as sl}
                   <button
-                    class="status-btn"
-                    class:aktywny={w.status === s.value}
-                    style:--kolor={s.kolor}
-                    onclick={() => ustawStatus(kat.id, w.id, s.value)}
+                    class="skill-btn"
+                    class:active={ind.skillLevel === sl.value}
+                    style:--color={sl.color}
+                    onclick={() => setSkillLevel(catIndex, indIndex, sl.value)}
                   >
-                    {s.label}
+                    {$t(`skillLevels.${sl.value}`)}
                   </button>
                 {/each}
               </div>
+              {#if ind.skillLevel !== null}
+                <textarea
+                  class="notes-field"
+                  rows="2"
+                  placeholder={$t("diagnosis.notesPlaceholder")}
+                  bind:value={draft.categories[catIndex].indicators[indIndex].notes}
+                ></textarea>
+              {/if}
             </div>
           {/each}
         </div>
       </section>
     {/each}
 
-    <!-- Informacje dodatkowe -->
+    <!-- Additional information -->
     <section class="card">
-      <h2 class="section-title">Informacje dodatkowe</h2>
+      <h2 class="section-title">{$t("diagnosis.additionalInfo")}</h2>
 
       <label class="field-label">
-        Potrzeby rozwojowe i edukacyjne (zauważone trudności)
-        <textarea
-          bind:value={robocze.potrzebyRozwojowe}
-          rows="3"
-        ></textarea>
+        {$t("diagnosis.developmentalNeeds")}
+        <textarea bind:value={draft.developmentalNeeds} rows="3"></textarea>
       </label>
 
       <label class="field-label">
-        Predyspozycje i uzdolnienia (mocne strony)
-        <textarea bind:value={robocze.predyspozycje} rows="3"></textarea>
+        {$t("diagnosis.strengths")}
+        <textarea bind:value={draft.strengths} rows="3"></textarea>
       </label>
 
       <label class="field-label">
-        Wskazówki dla nauczyciela klasy I
-        <textarea
-          bind:value={robocze.wskazowkiDlaNauczyciela}
-          rows="3"
-        ></textarea>
+        {$t("diagnosis.teacherNotes")}
+        <textarea bind:value={draft.teacherNotes} rows="3"></textarea>
       </label>
     </section>
 
-    {#if blad}
-      <div class="alert alert-error">{blad}</div>
+    {#if errorMessage}
+      <div class="alert alert-error">{errorMessage}</div>
     {/if}
 
     <div class="save-row">
       <button
         class="btn btn-primary btn-lg"
-        onclick={zapisz}
-        disabled={zapisywanie}
+        onclick={save}
+        disabled={isSaving}
       >
-        {zapisywanie ? "Zapisywanie…" : "💾 Zapisz zmiany"}
+        {isSaving ? $t("diagnosis.saving") : $t("diagnosis.saveChanges")}
       </button>
     </div>
   {/if}
@@ -213,44 +228,41 @@
     border-bottom: 2px solid;
   }
 
-  .section-title.kategoria-fizyczny { border-color: #3b82f6; color: #1d4ed8; }
-  .section-title.kategoria-emocjonalny { border-color: #f59e0b; color: #b45309; }
-  .section-title.kategoria-spoleczny { border-color: #10b981; color: #065f46; }
-  .section-title.kategoria-poznawczy { border-color: #8b5cf6; color: #6d28d9; }
+  .section-title.area-physical { border-color: #3b82f6; color: #1d4ed8; }
+  .section-title.area-emotional { border-color: #f59e0b; color: #b45309; }
+  .section-title.area-social { border-color: #10b981; color: #065f46; }
+  .section-title.area-cognitive { border-color: #8b5cf6; color: #6d28d9; }
 
-  .wskazniki {
+  .indicators {
     display: flex;
     flex-direction: column;
-    gap: 1rem;
+    gap: 1.2rem;
   }
 
-  .wskaznik {
+  .indicator {
     display: flex;
-    align-items: center;
-    gap: 1rem;
-    flex-wrap: wrap;
+    flex-direction: column;
+    gap: 0.5rem;
   }
 
-  .wskaznik-opis {
-    flex: 1;
-    min-width: 200px;
+  .indicator-desc {
     font-size: 0.9rem;
     color: #334155;
     line-height: 1.45;
   }
 
-  .status-buttons {
+  .skill-buttons {
     display: flex;
     gap: 0.4rem;
-    flex-shrink: 0;
+    flex-wrap: wrap;
   }
 
-  .status-btn {
+  .skill-btn {
     padding: 0.3rem 0.75rem;
     border-radius: 20px;
-    border: 1.5px solid var(--kolor);
+    border: 1.5px solid var(--color);
     background: transparent;
-    color: var(--kolor);
+    color: var(--color);
     font-size: 0.78rem;
     font-weight: 500;
     cursor: pointer;
@@ -258,13 +270,30 @@
     font-family: inherit;
   }
 
-  .status-btn:hover {
-    background: color-mix(in srgb, var(--kolor) 10%, transparent);
+  .skill-btn:hover {
+    background: color-mix(in srgb, var(--color) 10%, transparent);
   }
 
-  .status-btn.aktywny {
-    background: var(--kolor);
+  .skill-btn.active {
+    background: var(--color);
     color: #fff;
+  }
+
+  .notes-field {
+    border: 1px solid #d1d5db;
+    border-radius: 8px;
+    padding: 0.5rem 0.8rem;
+    font-size: 0.875rem;
+    font-family: inherit;
+    resize: vertical;
+    outline: none;
+    transition: border-color 0.15s;
+    width: 100%;
+  }
+
+  .notes-field:focus {
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.12);
   }
 
   .field-label {

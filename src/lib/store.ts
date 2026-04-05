@@ -1,25 +1,25 @@
 /**
- * Globalny store aplikacji – trzyma aktualny stan bazy danych.
+ * Global application store – holds the current state of the database.
  */
 import { writable } from "svelte/store";
-import type { BazaDanych } from "./types.js";
-import { wczytajBaze } from "./dataService.js";
+import type { Database } from "./types.js";
+import { loadDatabase } from "./dataService.js";
 
-/** Stan bazy danych ładowanej przy starcie aplikacji */
-export const baza = writable<BazaDanych>({ wersja: 1, dzieci: [], diagnozy: [] });
-export const ladowanie = writable<boolean>(true);
-export const blad = writable<string | null>(null);
+/** Database state loaded at application startup */
+export const database = writable<Database>({ version: 1, children: [], diagnoses: [] });
+export const isLoading = writable<boolean>(true);
+export const error = writable<string | null>(null);
 
-/** Inicjalizuje store, wczytując dane z pliku lub mocka */
-export async function inicjalizuj(): Promise<void> {
-  ladowanie.set(true);
-  blad.set(null);
+/** Initialises the store by loading data from file or mock */
+export async function initStore(): Promise<void> {
+  isLoading.set(true);
+  error.set(null);
   try {
-    const dane = await wczytajBaze();
-    baza.set(dane);
+    const data = await loadDatabase();
+    database.set(data);
   } catch (e) {
-    blad.set(String(e));
+    error.set(String(e));
   } finally {
-    ladowanie.set(false);
+    isLoading.set(false);
   }
 }
