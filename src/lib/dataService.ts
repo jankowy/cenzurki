@@ -22,7 +22,7 @@ export async function loadDatabase(): Promise<Database> {
       "@tauri-apps/plugin-fs"
     );
     const text = await readTextFile(DATA_FILE, {
-      baseDir: BaseDirectory.AppData,
+      baseDir: BaseDirectory.AppLocalData,
     });
     return JSON.parse(text) as Database;
   } catch {
@@ -38,10 +38,10 @@ export async function saveDatabase(db: Database): Promise<void> {
     return;
   }
   const { writeTextFile, mkdir, BaseDirectory } = await import("@tauri-apps/plugin-fs");
-  // Ensure the app data directory exists before writing (it may not exist on first run)
-  await mkdir(".", { baseDir: BaseDirectory.AppData, recursive: true });
+  // Ensure the app local data directory exists before writing (it may not exist on first run)
+  await mkdir("", { baseDir: BaseDirectory.AppLocalData, recursive: true });
   await writeTextFile(DATA_FILE, JSON.stringify(db, null, 2), {
-    baseDir: BaseDirectory.AppData,
+    baseDir: BaseDirectory.AppLocalData,
   });
 }
 
