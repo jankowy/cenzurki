@@ -37,7 +37,9 @@ export async function saveDatabase(db: Database): Promise<void> {
     console.info("[dev] Save database (mock):", db);
     return;
   }
-  const { writeTextFile, BaseDirectory } = await import("@tauri-apps/plugin-fs");
+  const { writeTextFile, mkdir, BaseDirectory } = await import("@tauri-apps/plugin-fs");
+  // Ensure the app data directory exists before writing (it may not exist on first run)
+  await mkdir(".", { baseDir: BaseDirectory.AppData, recursive: true });
   await writeTextFile(DATA_FILE, JSON.stringify(db, null, 2), {
     baseDir: BaseDirectory.AppData,
   });

@@ -36,7 +36,8 @@
     "add": "Dodaj",
     "error": {
       "nameRequired": "Imię i nazwisko są wymagane.",
-      "invalidYear": "Podaj prawidłowy rok urodzenia."
+      "invalidYear": "Podaj prawidłowy rok urodzenia.",
+      "saveFailed": "Nie udało się zapisać danych. Sprawdź uprawnienia aplikacji."
     }
   },
   "diagnosis": {
